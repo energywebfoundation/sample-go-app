@@ -15,7 +15,9 @@ go build -o ./bin/sample-app cmd/sample-app/main.go
 ```
 
 Run:
-`./bin/sample-app`
+```
+./bin/sample-app
+```
 
 
 ### Format code
@@ -28,10 +30,14 @@ Instructions how to run app with Docker.
 
 
 Build docker image:
-`docker build --tag sample-go-app -f ./docker/Dockerfile .`
+```
+docker build --tag sample-go-app -f ./docker/Dockerfile .
+```
 
 Run local container:
-`docker run --rm -p 8000:8000 sample-go-app`
+```
+docker run --rm -p 8000:8000 sample-go-app
+```
 
 
 
