@@ -11,8 +11,8 @@ image:
   tag: "latest"
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "sample-go-app"
+fullnameOverride: "sample-go-app"
 
 serviceAccount:
   # Specifies whether a service account should be created

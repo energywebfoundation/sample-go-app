@@ -63,3 +63,7 @@ docker run --rm -p 8000:8000 sample-go-app
 
 ## Kubernetes
 Instructions how to run app on Kubernetes.
+
+```
+helm install sample-app oci://ghcr.io/energywebfoundation/sample-go-app-helm
+```
