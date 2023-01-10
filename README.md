@@ -1,5 +1,5 @@
 # sample-go-app
-Sample application written in Go
+Sample application written in Go. Here should be a description of what the purpose of the application is.
 
 ## Run locally
 Instructions how to run app locally.
@@ -25,8 +25,28 @@ Run:
 gofmt -s -w .
 ```
 
+
+## How to use
+
+Hello world:
+```
+% curl localhost:8000
+Hello, world!
+```
+
+
+Get latest block of Volta network:
+```
+% curl localhost:8000/block
+21118165
+```
+
 ## Docker
 Instructions how to run app with Docker.
+
+```
+docker run --rm -p 8000:8000 ghcr.io/energywebfoundation/sample-go-app:master
+```
 
 
 Build docker image:
