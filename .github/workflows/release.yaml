@@ -16,6 +16,7 @@ on:
       - helm/**
       - docs/**
       - README.md
+      - .github/workflows/release-helm.yaml
 
 env:
   REGISTRY: ghcr.io
