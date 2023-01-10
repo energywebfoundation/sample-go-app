@@ -67,3 +67,15 @@ Instructions how to run app on Kubernetes.
 ```
 helm install sample-app oci://ghcr.io/energywebfoundation/sample-go-app-helm
 ```
+
+```
+export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=sample-go-app,app.kubernetes.io/instance=sample-app" -o jsonpath="{.items[0].metadata.name}")
+export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+kubectl --namespace default port-forward $POD_NAME $CONTAINER_PORT:$CONTAINER_PORT
+```
+
+```
+% curl localhost:8000/block
+21118770
+helm un sample-app
+```
