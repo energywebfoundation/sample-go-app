@@ -38,7 +38,7 @@ Hello, world!
 Get latest block of Volta network:
 ```
 % curl localhost:8000/block
-21118165
+Latest block is: 21133370
 ```
 
 ## Docker
@@ -76,6 +76,6 @@ kubectl --namespace default port-forward $POD_NAME $CONTAINER_PORT:$CONTAINER_PO
 
 ```
 % curl localhost:8000/block
-21118770
+Latest block is: 21133370
 helm un sample-app
 ```

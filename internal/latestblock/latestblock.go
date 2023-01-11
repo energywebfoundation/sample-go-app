@@ -46,5 +46,5 @@ func (ws WrapperStruct) GetBlockHandler(w http.ResponseWriter, req *http.Request
 		panic(err)
 	}
 
-	io.WriteString(w, block)
+	io.WriteString(w, "Latest block is: " + block)
 }
