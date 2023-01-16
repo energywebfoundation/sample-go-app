@@ -19,7 +19,7 @@ RUN go build -o /sample-app cmd/sample-app/main.go
 ## Deploy
 ##
 
-FROM gcr.io/distroless/base-debian10
+FROM gcr.io/distroless/base-debian11
 
 WORKDIR /
 

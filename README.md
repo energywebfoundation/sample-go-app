@@ -1,6 +1,18 @@
 # sample-go-app
 Sample application written in Go. Here should be a description of what the purpose of the application is.
 
+
+Checklist:
+- [] Inform DevOps Team
+- [] Clear README file describing app purpose and instructions how to run
+- [] Defined branching and release strategy
+- [] Branch protection rules
+- [] CI/test pipelines set up, make sure to use Snyk for security, code quality and Docker IMAGE (not Dockerfile!) scanning
+- [] Set up CD pipeline for creating GH releases (tags), changelog and building Docker image
+- [] Docker image published with GH packages
+- [] Deployment guide instructions (preferably k8s with helm chart, generic microservice should be just enough, custom (public) helm otherwise)
+- [] Add license, code owners, issue template, contribution guide etc
+
 ## Run locally
 Instructions how to run app locally.
 
@@ -45,7 +57,7 @@ Latest block is: 21133370
 Instructions how to run app with Docker.
 
 ```
-docker run --rm -p 8000:8000 ghcr.io/energywebfoundation/sample-go-app:master
+docker run --rm -p 8000:8000 ghcr.io/energywebfoundation/sample-go-app:latest
 ```
 
 
