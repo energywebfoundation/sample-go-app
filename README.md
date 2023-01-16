@@ -1,6 +1,8 @@
 # sample-go-app
 Sample application written in Go. Here should be a description of what the purpose of the application is.
 
+
+
 ## Run locally
 Instructions how to run app locally.
 
@@ -45,7 +47,7 @@ Latest block is: 21133370
 Instructions how to run app with Docker.
 
 ```
-docker run --rm -p 8000:8000 ghcr.io/energywebfoundation/sample-go-app:master
+docker run --rm -p 8000:8000 ghcr.io/energywebfoundation/sample-go-app:latest
 ```
 
 
