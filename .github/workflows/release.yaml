@@ -32,7 +32,6 @@ jobs:
       ENVIRONMENT: ${{ steps.configure.outputs.ENVIRONMENT }}
       PRERELEASE: ${{ steps.configure.outputs.PRERELEASE }}
       IMAGE_TAG: ${{ steps.configure.outputs.IMAGE_TAG }}
-      TAG_DRY_RUN: ${{ steps.configure.outputs.TAG_DRY_RUN }}
     steps:
       - uses: styfle/cancel-workflow-action@0.11.0
         with:
@@ -43,18 +42,15 @@ jobs:
               if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
                 echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
                 echo "PRERELEASE=true" >> $GITHUB_OUTPUT
-                echo "IMAGE_TAG=$(uuidgen)" >> $GITHUB_OUTPUT
-                echo "TAG_DRY_RUN=true" >> $GITHUB_OUTPUT
+                echo "IMAGE_TAG=alpha" >> $GITHUB_OUTPUT
               elif [ "${{ github.ref }}" = "refs/heads/master" ]; then
                 echo "ENVIRONMENT=staging" >> $GITHUB_OUTPUT
                 echo "PRERELEASE=true" >> $GITHUB_OUTPUT
-                echo "IMAGE_TAG=staging" >> $GITHUB_OUTPUT
-                echo "TAG_DRY_RUN=false" >> $GITHUB_OUTPUT
+                echo "IMAGE_TAG=beta" >> $GITHUB_OUTPUT
               elif [ "${{ github.ref }}" = "refs/heads/release" ]; then
                 echo "ENVIRONMENT=prod" >> $GITHUB_OUTPUT
                 echo "PRERELEASE=false" >> $GITHUB_OUTPUT
                 echo "IMAGE_TAG=latest" >> $GITHUB_OUTPUT
-                echo "TAG_DRY_RUN=false" >> $GITHUB_OUTPUT
               else
                 echo "Branch not configured"
                 exit 1
@@ -77,10 +73,9 @@ jobs:
           release_branches: release
           pre_release_branches: master,develop
           custom_release_rules: major:major:Major Changes,minor:minor:Minor Changes,chore:patch:Chores
-          dry_run: ${{  needs.configure.outputs.TAG_DRY_RUN  }}
 
       - name: Create a GitHub release
-        if: ("${{ github.ref }}" = "refs/heads/master") && ("${{ github.ref }}" = "refs/heads/release")
+        if: github.ref == 'refs/heads/master'
         uses: ncipollo/release-action@v1.12.0
         with:
           prerelease: ${{  needs.configure.outputs.PRERELEASE  }}
