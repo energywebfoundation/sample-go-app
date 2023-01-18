@@ -24,23 +24,47 @@ env:
 
 jobs:
 
-  cancel-previous:
-    name: Cancel Previous Runs
+  configure:
+    name: Configure variables based on current branch
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    outputs:
+      ENVIRONMENT: ${{ steps.configure.outputs.ENVIRONMENT }}
+      PRERELEASE: ${{ steps.configure.outputs.PRERELEASE }}
+      IMAGE_TAG: ${{ steps.configure.outputs.IMAGE_TAG }}
+      TAG_DRY_RUN: ${{ steps.configure.outputs.TAG_DRY_RUN }}
     steps:
       - uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
-  
-  push-tag:
-    name: Push tag
+      - id: configure
+        run: |
+              echo "Running on branch ${{ github.ref }}"
+              if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+                echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+                echo "PRERELEASE=true" >> $GITHUB_ENV
+                echo "IMAGE_TAG=$(uuidgen)" >> $GITHUB_ENV
+                echo "TAG_DRY_RUN=true" >> $GITHUB_ENV
+              elif [ "${{ github.ref }}" = "refs/heads/master" ]; then
+                echo "ENVIRONMENT=staging" >> $GITHUB_ENV
+                echo "PRERELEASE=true" >> $GITHUB_ENV
+                echo "IMAGE_TAG=staging" >> $GITHUB_ENV
+                echo "TAG_DRY_RUN=false" >> $GITHUB_ENV
+              elif [ "${{ github.ref }}" = "refs/heads/release" ]; then
+                echo "ENVIRONMENT=prod" >> $GITHUB_ENV
+                echo "PRERELEASE=false" >> $GITHUB_ENV
+                echo "IMAGE_TAG=latest" >> $GITHUB_ENV
+                echo "TAG_DRY_RUN=false" >> $GITHUB_ENV
+              else
+                echo "Branch not configured"
+                exit 1
+              fi
+
+  tag-release:
+    name: Push tag and create release
     runs-on: ubuntu-latest
-    needs: [cancel-previous]
+    needs: [configure]
     outputs:
       new_version: ${{ steps.tag_version.outputs.new_version }}
-      changelog: ${{ steps.tag_version.outputs.changelog }}
-      tag: ${{ steps.tag_version.outputs.new_tag }}
     steps:
       - uses: actions/checkout@v2
 
@@ -52,27 +76,35 @@ jobs:
           release_branches: release
           pre_release_branches: master,develop
           custom_release_rules: major:major:Major Changes,minor:minor:Minor Changes,chore:patch:Chores
-          dry_run: true
+          dry_run: ${{  needs.configure.outputs.TAG_DRY_RUN  }}
 
-  release:
-    name: Create Github Release
-    runs-on: ubuntu-latest
-    needs: [push-tag]
-
-    steps:
       - name: Create a GitHub release
+        if: ("${{ github.ref }}" = "refs/heads/master") && ("${{ github.ref }}" = "refs/heads/release")
         uses: ncipollo/release-action@v1.12.0
         with:
-          draft: true
-          prerelease: true
-          tag: ${{  needs.push-tag.outputs.tag  }}
-          name: Release ${{  needs.push-tag.outputs.tag  }}
-          body: ${{  needs.push-tag.outputs.changelog  }}
+          prerelease: ${{  needs.configure.outputs.PRERELEASE  }}
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+
+  # release:
+  #   name: Create Github Release
+  #   runs-on: ubuntu-latest
+  #   needs: [push-tag]
+
+  #   steps:
+  #     - name: Create a GitHub release
+  #       uses: ncipollo/release-action@v1.12.0
+  #       with:
+  #         prerelease: true
+  #         tag: ${{  needs.push-tag.outputs.tag  }}
+  #         name: Release ${{  needs.push-tag.outputs.tag  }}
+  #         body: ${{  needs.push-tag.outputs.changelog  }}
 
   build-and-push-image:
     name: Build and push Docker image
     runs-on: ubuntu-latest
-    needs: [push-tag]
+    needs: [push-tag, configure]
     permissions:
       contents: read
       packages: write
@@ -106,6 +138,6 @@ jobs:
           context: .
           push: false
           platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.push-tag.outputs.tag  }}
+          tags: ${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.tag-release.outputs.tag  }}
           labels: ${{ steps.meta.outputs.labels }}
           file: ./docker/Dockerfile
