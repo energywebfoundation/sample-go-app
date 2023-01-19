@@ -1,0 +1,50 @@
+# This workflow validates that PR was created from a specific branch
+# It also dry run tagging action to validate calculated tag and changelog
+
+name: Pull Request Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - develop
+      - master
+      - release
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Validate PR
+      run: |
+        if [ "$GITHUB_HEAD_REF" = "develop" ] && [ "$GITHUB_BASE_REF" = "master" ]; then
+          echo "PR from $GITHUB_HEAD_REF to $GITHUB_BASE_REF is allowed."
+        elif [ "$GITHUB_HEAD_REF" = "master" ] && [ "$GITHUB_BASE_REF" = "release" ]; then
+          echo "PR from $GITHUB_HEAD_REF to $GITHUB_BASE_REF is allowed."
+        else
+          echo "Pull request from $GITHUB_HEAD_REF to $GITHUB_BASE_REF not allowed. Only pull requests from develop to master or from master to release are allowed."
+          exit 1
+        fi
+  
+  tag-dry-run:
+    name: Dry run tagging
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.base_ref }}  # Checkout to target branch instead of merge commit
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: release
+          pre_release_branches: master,develop    # these branches will produce pre-release tag (eg. v0.1.2-develop.0)
+          custom_release_rules: major:major:Major Changes,minor:minor:Minor Changes,chore:patch:Chores
+          dry_run: true
