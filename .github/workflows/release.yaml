@@ -47,7 +47,7 @@ jobs:
                 echo "PRERELEASE=true" >> $GITHUB_OUTPUT
                 echo "IMAGE_TAG=$(uuidgen)" >> $GITHUB_OUTPUT
                 echo "TAG_DRY_RUN=true" >> $GITHUB_OUTPUT
-                echo "PUSH_DOCKER=true" >> $GITHUB_OUTPUT
+                echo "PUSH_DOCKER=false" >> $GITHUB_OUTPUT
               elif [ "${{ github.ref }}" = "refs/heads/master" ]; then
                 echo "ENVIRONMENT=staging" >> $GITHUB_OUTPUT
                 echo "PRERELEASE=true" >> $GITHUB_OUTPUT
@@ -72,7 +72,7 @@ jobs:
     outputs:
       tag: ${{ steps.tag_version.outputs.new_tag }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Bump version and push tag
         id: tag_version
@@ -80,7 +80,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: release
-          pre_release_branches: master,develop    # these branches will produce pre-release tag (eg. v0.1.2-develop.0)
+          pre_release_branches: master    # these branches will produce pre-release tag (eg. v0.1.2-beta.0)
+          append_to_pre_release_tag: beta
           custom_release_rules: major:major:Major Changes,minor:minor:Minor Changes,chore:patch:Chores
           dry_run: ${{  needs.configure.outputs.TAG_DRY_RUN  }}   # pushes to develop won't trigger tagging
 
@@ -132,12 +133,23 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
+      # When running on develop branch we want to tag Docker images with unique id and branch name only.
+      # When running on master and release we're adding sem ver and latest (for release) tags too.
+      - name: Setup Docker tags
+        id: tags
+        run: |
+              if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+                echo "TAGS=${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }}" >> $GITHUB_OUTPUT
+              else
+                echo "TAGS=${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.tag-release.outputs.tag  }}" >> $GITHUB_OUTPUT
+              fi
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
           context: .
           push: ${{  needs.configure.outputs.PUSH_DOCKER  }}
           platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.tag-release.outputs.tag  }}
+          tags: ${{ steps.tags.outputs.TAGS }}
           labels: ${{ steps.meta.outputs.labels }}
           file: ./docker/Dockerfile

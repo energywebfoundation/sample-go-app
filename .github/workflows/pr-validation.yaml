@@ -5,9 +5,8 @@ name: Pull Request Validation
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened, edited]
     branches:
-      - develop
       - master
       - release
 
