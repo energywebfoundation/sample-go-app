@@ -85,7 +85,7 @@ jobs:
           dry_run: ${{  needs.configure.outputs.TAG_DRY_RUN  }}   # pushes to develop won't trigger tagging
 
       - name: Create a GitHub release
-        if: github.ref == 'refs/heads/master' && github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release'
         uses: ncipollo/release-action@v1.12.0
         with:
           prerelease: ${{  needs.configure.outputs.PRERELEASE  }}   # master branch will create a pre-release
@@ -125,6 +125,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # This step outputs Docker labels and Docker tag associated with github.ref (branch name in this scenario)
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
