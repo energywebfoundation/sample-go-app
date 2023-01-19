@@ -22,9 +22,9 @@ jobs:
     - name: Validate PR
       run: |
         if [ "$GITHUB_HEAD_REF" = "develop" ] && [ "$GITHUB_BASE_REF" = "master" ]; then
-          echo "PR from develop to master is allowed."
+          echo "PR from $GITHUB_HEAD_REF to $GITHUB_BASE_REF is allowed."
         elif [ "$GITHUB_HEAD_REF" = "master" ] && [ "$GITHUB_BASE_REF" = "release" ]; then
-          echo "PR from master to release is allowed."
+          echo "PR from $GITHUB_HEAD_REF to $GITHUB_BASE_REF is allowed."
         else
           echo "Pull request from $GITHUB_HEAD_REF to $GITHUB_BASE_REF not allowed. Only pull requests from develop to master or from master to release are allowed."
           exit 1
