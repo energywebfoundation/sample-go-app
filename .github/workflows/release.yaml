@@ -139,9 +139,9 @@ jobs:
         id: tags
         run: |
               if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-                echo "TAGS=$(echo ${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }}" >> $GITHUB_OUTPUT
+                echo "TAGS=${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }}" >> $GITHUB_OUTPUT
               else
-                echo "TAGS=$(echo ${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.tag-release.outputs.tag  }}" >> $GITHUB_OUTPUT
+                echo "TAGS=${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.configure.outputs.IMAGE_TAG  }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{  needs.tag-release.outputs.tag  }}" >> $GITHUB_OUTPUT
               fi
 
       - name: Build and push Docker image
