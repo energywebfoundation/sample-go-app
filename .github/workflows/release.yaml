@@ -7,7 +7,7 @@
 # To get a newer version, you will need to update the SHA.
 # You can also reference a tag or branch, but the action may change without warning.
 
-name: Create and publish a Docker image
+name: Build and publish a Docker image
 
 on:
   push:
@@ -80,7 +80,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: release
-          pre_release_branches: master
+          pre_release_branches: master,develop
           custom_release_rules: major:major:Major Changes,minor:minor:Minor Changes,chore:patch:Chores
           dry_run: ${{  needs.configure.outputs.TAG_DRY_RUN  }}
 
