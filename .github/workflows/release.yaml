@@ -85,7 +85,7 @@ jobs:
           dry_run: ${{  needs.configure.outputs.TAG_DRY_RUN  }}   # pushes to develop won't trigger tagging
 
       - name: Create a GitHub release
-        if: github.ref == 'refs/heads/master' && github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release'
         uses: ncipollo/release-action@v1.12.0
         with:
           prerelease: ${{  needs.configure.outputs.PRERELEASE  }}   # master branch will create a pre-release
