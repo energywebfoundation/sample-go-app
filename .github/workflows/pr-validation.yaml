@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.pull_request.base.sha }}  # Checkout to target branch instead of merge commit
+          ref: ${{ github.base_ref }}  # Checkout to target branch instead of merge commit
 
       - name: Bump version and push tag
         id: tag_version
