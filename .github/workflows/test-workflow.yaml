@@ -13,4 +13,4 @@ jobs:
     steps:
     - name: Validate Workflow Files
       run: |
-        echo "Hello from ${{ github.ref }}"
+        echo "Hello World from ${{ github.ref }}"
