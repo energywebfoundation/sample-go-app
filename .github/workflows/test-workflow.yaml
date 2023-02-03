@@ -1,0 +1,16 @@
+name: Validate Workflow Files
+
+on:
+  push:
+    branches:
+      - main
+      - feat/test-branch
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Validate Workflow Files
+      run: |
+        echo "Hello from ${{ github.ref }}"
