@@ -80,3 +80,7 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Enable pre sync hook for ArgoCD
+presync:
+  enabled: true

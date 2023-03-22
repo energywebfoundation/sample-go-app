@@ -1,0 +1,19 @@
+{{- if .Values.presync.enabled -}}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: presync-helm
+  namespace: sample
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/hook: PreSync
+  labels:
+    app.kubernetes.io/name: presync-helm
+spec:
+  containers:
+  - name: sample-app-presync
+    image: registry.access.redhat.com/ubi8/ubi
+    command: ['bash', '-c', 'sleep 3 ; echo Presync']
+    imagePullPolicy: Always
+  restartPolicy: "Never"
+{{- end }}
