@@ -12,7 +12,7 @@ import (
 func main() {
 
 	handlers := latestblock.WrapperStruct{RpcUrl: "https://volta-rpc.energyweb.org"}
-	// Hello world, the web server
+	// Hello world
 
 	helloHandler := func(w http.ResponseWriter, req *http.Request) {
 		io.WriteString(w, "Hello, world!\n")
