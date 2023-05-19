@@ -1,14 +1,24 @@
 package main
 
 import (
+	"errors"
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/energywebfoundation/sample-go-app/internal/latestblock"
 )
 
 func main() {
+
+	shouldCrash := os.Getenv("SHOULD_CRASH")
+
+	if shouldCrash == "true" {
+		panic(errors.New("SHOULD_CRASH is set to true"))
+
+		return
+	}
 
 	shouldReturnHealth := true
 
