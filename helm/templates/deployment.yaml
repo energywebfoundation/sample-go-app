@@ -36,7 +36,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: "SHOULD_CRASH"
-              value: {{.Values.shouldCrash}}
+              value: "{{.Values.shouldCrash}}"
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
