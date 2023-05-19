@@ -14,7 +14,8 @@ imagePullSecrets: []
 nameOverride: "sample-go-app"
 fullnameOverride: "sample-go-app"
 
-restartPolicy: "Never"
+restartPolicy: "Always"
+shouldCrash: "False"
 
 serviceAccount:
   # Specifies whether a service account should be created
